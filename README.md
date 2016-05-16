@@ -3,6 +3,8 @@ cachebot
 
 A [Slack](https://slack.com/) bot for [CloudFlare](https://www.cloudflare.com/).
 
+![Screenshot of cachebot](screenshot.png)
+
 ### Configuration
 
 Configure cachebot using environment variables:
