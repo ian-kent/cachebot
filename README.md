@@ -17,6 +17,14 @@ Configure cachebot using environment variables:
 | URL_BASES            | Base URL(s), comma separated
 | URL_SUFFIXES         | URL suffixes, comma separated
 
+### Usage
+
+1. Start cachebot
+2. `/invite` cachebot to a channel
+3. Ask cachebot to clear your cache:
+  - `clear cache`
+  - `clear cache for /some/uri`
+
 ### License
 
 Copyright ©‎ 2016, Ian Kent (http://iankent.uk).
