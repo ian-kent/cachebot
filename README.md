@@ -46,6 +46,12 @@ AUTHORISED_USERS=foo,bar
 RESTRICTED_CHANNELS=support
 ```
 
+### Elastic Beanstalk
+
+If you deploy to Elastic Beanstalk, you'll need to add an `EXPOSE` line to
+the Dockerfile. Cachebot doesn't listen on any ports, but Elastic Beanstalk
+prevents deployments of apps without it.
+
 ### License
 
 Copyright ©‎ 2016, Ian Kent (http://iankent.uk).
