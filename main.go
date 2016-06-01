@@ -95,12 +95,18 @@ func cacheDeleter() {
 				for _, v := range clearWaiting {
 					err := v.do()
 					if err != nil {
+						log.Printf("cacheDeleter: Error received: %s\n", err.Error())
 						api.PostMessage(v.Channel, "<@"+v.User+"> Sorry, that didn't work...\n*Error*: "+err.Error(), slack.PostMessageParameters{AsUser: true})
 						continue
 					}
-					f := strings.Join(v.URIs, "`\n`")
-					f = "`" + f + "`"
-					api.PostMessage(v.Channel, "<@"+v.User+"> That's done, the following items have been purged:\n"+f, slack.PostMessageParameters{AsUser: true})
+					log.Println("cacheDeleter: 'do' completed without errors")
+					if len(v.URIs) > 0 {
+						f := strings.Join(v.URIs, "`\n`")
+						f = "`" + f + "`"
+						api.PostMessage(v.Channel, "<@"+v.User+"> That's done, the following items have been cleared:\n"+f, slack.PostMessageParameters{AsUser: true})
+					} else {
+						api.PostMessage(v.Channel, "<@"+v.User+"> That's done, the entire cache has been cleared", slack.PostMessageParameters{AsUser: true})
+					}
 				}
 				clearWaiting = make([]cacheClearPending, 0)
 			}
@@ -136,8 +142,10 @@ func (c cacheClearPending) do() error {
 	var cfReq cloudflareRequest
 
 	if c.Everything {
+		log.Println("cacheClearPending [do]: Clearing everything")
 		cfReq.PurgeEverything = true
 	} else {
+		log.Printf("cacheClearPending [do]: Clearing %d files\n", len(c.URIs))
 		cfReq.Files = c.URIs
 	}
 
@@ -176,6 +184,8 @@ func (c cacheClearPending) do() error {
 		log.Printf("%+v\n", cfRes)
 		return fmt.Errorf("CloudFlare returned an unsuccessful response")
 	}
+
+	log.Println("cacheClearPending [do]: Completed without errors")
 
 	return nil
 }
@@ -303,7 +313,7 @@ Loop:
 					f := strings.Join(uris, "`\n`")
 					f = "`" + f + "`"
 					api.PostMessage(ev.Channel, "<@"+ev.User+"> I'm about to clear the following cache items, are you sure?\n"+f, slack.PostMessageParameters{AsUser: true})
-					clearPending[ev.User] = cacheClearPending{Everything: true, Created: time.Now(), URIs: uris, User: ev.User}
+					clearPending[ev.User] = cacheClearPending{Everything: true, Created: time.Now(), URIs: uris, User: ev.User, Channel: ev.Channel}
 					continue
 				}
 

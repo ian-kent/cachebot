@@ -7,4 +7,6 @@ RUN apk --update upgrade && \
     update-ca-certificates && \
     rm -rf /var/cache/apk/*
 
+EXPOSE 8080
+
 CMD /cachebot_linux_amd64
